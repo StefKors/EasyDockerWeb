@@ -1,10 +1,12 @@
 import React, {Component} from 'react';
-import {Button, Card, Checkbox, Form, Icon, Input} from 'antd';
+import {Button, Card, Checkbox, Form, Input} from 'antd';
+import { LockTwoTone  } from '@ant-design/icons';
 
-import "./login.less"
+import "./login.css"
 
-@Form.create()
 class Login extends Component {
+    formRef = React.createRef();
+
     handleSubmit = e => {
         e.preventDefault();
         this.props.form.validateFields((err, values) => {
@@ -18,13 +20,13 @@ class Login extends Component {
         const {getFieldDecorator} = this.props.form;
         return (
             <Card title="Easy Docker Web" className="loginWeb">
-                <Form onSubmit={this.handleSubmit} className="login-form">
+                <Form onSubmit={this.handleSubmit} className="login-form" ref={this.formRef}>
                     <Form.Item>
                         {getFieldDecorator('password', {
                             rules: [{required: true, message: 'Please input your Password!'}],
                         })(
                             <Input
-                                prefix={<Icon type="lock" style={{color: 'rgba(0,0,0,.25)'}}/>}
+                                prefix={<LockTwoTone twoToneColor="rgba(0,0,0,.25)" />}
                                 type="password"
                                 placeholder="Password"
                             />,
@@ -46,4 +48,4 @@ class Login extends Component {
     }
 }
 
-export default Login;
+export default Login

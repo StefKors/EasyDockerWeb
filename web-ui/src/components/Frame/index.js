@@ -1,13 +1,13 @@
 import {Layout, Menu, Icon} from 'antd';
-import './index.less'
+import './index.css'
 import React, {Component} from "react";
 // import {adminRouter} from "../../routes";
+import { MenuOutlined  } from '@ant-design/icons';
 
 import {withRouter} from 'react-router-dom'
 
 const {Header, Content, Sider, Footer} = Layout;
 
-@withRouter
 class Frame extends Component {
     state = {
         collapsed: false,
@@ -31,7 +31,6 @@ class Frame extends Component {
                 </Header>
                 <Layout>
                     <Sider width={200} collapsible collapsed={this.state.collapsed}
-                           style={{marginTop: "4px"}}
                            onCollapse={this.onCollapse}>
                         <Menu
                             mode="inline"
@@ -42,7 +41,7 @@ class Frame extends Component {
                         >
                             {
                                 this.props.menus.map(menu => {
-                                    return <Menu.Item key={menu.pathname}><Icon type={menu.icon}/>
+                                    return <Menu.Item key={menu.pathname}><MenuOutlined />
                                         <span>{menu.title}</span>
                                     </Menu.Item>
                                 })
@@ -66,4 +65,4 @@ class Frame extends Component {
     }
 }
 
-export default Frame;
+export default withRouter(Frame);

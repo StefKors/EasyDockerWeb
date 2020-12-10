@@ -1,10 +1,11 @@
 import React, {useEffect, useState, useCallback} from 'react';
-import {AutoComplete, Button, Card, Col, Icon, Input, message, Modal, Row, Table} from "antd";
+import {AutoComplete, Button, Card, Col, Input, message, Modal, Row, Table} from "antd";
+import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import {getDeleteImagesById, getImages, searchImage} from "../../requests";
 import {Terminal} from "xterm";
 import {FitAddon} from 'xterm-addon-fit';
 
-import './images.less'
+import './images.css'
 
 const socket = require('socket.io-client')('http://localhost:3000');
 const term = new Terminal({
@@ -38,7 +39,7 @@ const Images = () => {
                             onClick={() => deleteImagesHandler(record.key)}
                             loading={record.deleteLoading}
                     >
-                        <Icon type="delete"/></Button>
+                        <DeleteOutlined /></Button>
                 )
 
             }
@@ -223,7 +224,7 @@ const Images = () => {
     return (
         <Card title="Images" bordered={false}>
             <Button type="primary" style={{marginBottom: '8px'}} onClick={showModal}>
-                <Icon type="plus"/>
+                <PlusOutlined />
                 New images
             </Button>
             <br/>

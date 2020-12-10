@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {Alert, Spin} from 'antd';
-import './loading.less'
+import './loading.css'
 
 class Loading extends Component {
     render() {

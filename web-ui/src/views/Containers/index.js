@@ -1,8 +1,10 @@
 import React, {useEffect, useRef, useState, useCallback} from 'react';
-import {Button, Card, Icon, message, Modal, Table, Tag} from 'antd';
+import {Button, Card, message, Modal, Table, Tag, Tooltip} from 'antd';
+import { PlusOutlined, DeleteOutlined,CaretRightOutlined, StopOutlined  } from '@ant-design/icons';
 import {getContainers, getDeleteContainerById, getStartContainerById, getStopContainerById} from "../../requests";
 import ButtonGroup from "antd/es/button/button-group";
 import { calculateCPUPercentUnix } from './calculateCPUPercentUnix';
+import deepEqual from 'deep-equal'
 
 const STATE_COLOR_MAP = {
     "running": "green",
@@ -30,6 +32,14 @@ const Containers = () => {
             title: 'Image',
             dataIndex: 'Image',
             key: 'Image',
+            ellipsis: {
+                showTitle: false,
+            },
+            render: label => (
+                <Tooltip placement="topLeft" title={label}>
+                    {label}
+                </Tooltip>
+            ),
         },
         {
             title: 'Ports',
@@ -68,24 +78,30 @@ const Containers = () => {
             title: 'Operation',
             dataIndex: 'operation',
             key: 'operation',
+            width: 250,
+            align: 'right',
             render: (text, record) => {
                 return (
                     <ButtonGroup>
-                        <Button size="small" type="primary"
-                            loading={record.startLoading}
-                            disabled={record.State === 'running' ? true : false}
-                            onClick={() => startContainerHandler(record.key)}>
-                            <Icon type="caret-right" /></Button>
-                        <Button size="small" type="dashed"
-                            loading={record.stopLoading}
-                            disabled={record.State === 'exited' ? true : false}
-                            onClick={() => stopContainerHandler(record.key)}>
-                            <Icon type="stop" />
-                        </Button>
+                        {record.State !== 'running' && (
+                            <Button size="small" type="primary"
+                                loading={record.startLoading}
+                                disabled={record.State === 'running' ? true : false}
+                                onClick={() => startContainerHandler(record.key)}>
+                                <CaretRightOutlined />Start</Button>
+                        )}
+                        {record.State !== 'exited' && (
+                            <Button size="small"
+                                loading={record.stopLoading}
+                                disabled={record.State === 'exited' ? true : false}
+                                onClick={() => stopContainerHandler(record.key)}>
+                                <StopOutlined />Stop
+                            </Button>
+                        )}
                         <Button size="small" type="danger"
                             loading={record.deleteLoading}
                             onClick={() => deleteContainerHandler(record.key)}>
-                            <Icon type="delete" /></Button>
+                            <DeleteOutlined /></Button>
                     </ButtonGroup>
                 )
         
@@ -129,7 +145,6 @@ const Containers = () => {
 
             updateContainerStateById(id, "startLoading", true);
             await getStartContainerById(id)
-            updateContainersList()
             updateContainerStateById(id, "startLoading", false);
         } catch (error) {
             message.error(error.toString());
@@ -143,8 +158,7 @@ const Containers = () => {
             useSocket.current = false;
     
             updateContainerStateById(id, "stopLoading", true);
-            getStopContainerById(id)
-            updateContainersList()
+            await getStopContainerById(id)
             updateContainerStateById(id, "stopLoading", false);
         } catch (error) {
             message.error(error.toString());
@@ -159,7 +173,6 @@ const Containers = () => {
 
             updateContainerStateById(id, "deleteLoading", true);
             await getDeleteContainerById(id)
-            updateContainersList()
             updateContainerStateById(id, "deleteLoading", false);
         } catch (error) {
             message.error(error.toString());
@@ -171,7 +184,7 @@ const Containers = () => {
             setIsLoading(true);
             const containers = await getContainers()
             if (containers) {
-                const tmp = containers.map((container) => {
+                const newDataSource = containers.map((container) => {
                     socket.emit('getContainersInfo', container.Id);
                     const ports = container.Ports.map(port => {
                         let tmp = '';
@@ -180,6 +193,7 @@ const Containers = () => {
                         }
                         return "[" + port.Type + "] " + port.PrivatePort + tmp + "; ";
                     });
+                    console.log(container);
                     return {
                         key: container.Id,
                         Names: container.Names[0].split("/")[1],
@@ -193,8 +207,11 @@ const Containers = () => {
                         deleteLoading: false
                     }
                 });
-                setDataSource(tmp);
-                dataRef.current = tmp;
+
+                if (!deepEqual(dataSource, newDataSource)) {
+                    setDataSource(newDataSource);
+                    dataRef.current = newDataSource;
+                }
                 // return tmp;
             }
             setIsLoading(false);
@@ -232,12 +249,11 @@ const Containers = () => {
         return () => {
             socket.emit('end');
             socket.off('containerInfo');
-            console.log("end socket")
         }
     }, [dataSource]);
 
     useEffect(() => {
-        // console.log("dataSource Changed")
+        console.log("dataSource Changed")
         if (!useSocket.current && dataSource.length > 0) {
             console.log("start data ....");
             console.log("dataSource:" + dataSource.length);
@@ -249,13 +265,12 @@ const Containers = () => {
             });
             useSocket.current = true;
         }
-    }, [dataSource, updateContainerStateByData]);
-
+    }, []);
 
     return (
         <Card title="Containers" bordered={false}>
             <Button type="primary" style={{marginBottom: '8px'}} onClick={showModal}>
-                <Icon type="plus"/>
+                <PlusOutlined />
                 New container
             </Button>
             <Table dataSource={dataSource}

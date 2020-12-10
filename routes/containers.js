@@ -215,12 +215,12 @@ const returnContainersRouter = (io) => {
             });
         });
 
-        socket.on('end', () => {
+        socket.on('end', (id) => {
             array = [];
+            console.log('--------end---------', id);
             streams.map((stream) => {
                 stream.destroy();
             });
-            console.log('--------end---------');
 
         });
 

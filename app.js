@@ -6,7 +6,12 @@ const session = require('express-session');
 
 const {checkUser} = require('./middlewares/security');
 
-const io = require('socket.io')();
+const io = require('socket.io')({
+    cors: {
+        origin: "*",
+        methods: ["GET", "POST"]
+      }
+});
 const favicon = require('serve-favicon');
 app.io = io;
 
