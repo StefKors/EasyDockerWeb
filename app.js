@@ -49,7 +49,8 @@ app.all('*', (req, res, next) => {
     }
 });
 
-app.use(checkUser);
+// Turn off auth for now
+// app.use(checkUser);
 app.use(function (req, res, next) {
     res.locals.isLogin = req.session.isLogin || false;
     next();
