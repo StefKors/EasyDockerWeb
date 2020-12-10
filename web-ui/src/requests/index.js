@@ -19,31 +19,31 @@ service.interceptors.response.use((resp) => {
     }
 });
 
-export const getInfoOverView = () => {
+export const getInfoOverView = async () => {
     return service.get("/api/overview");
 };
 
-export const getContainers = () => {
+export const getContainers = async () => {
     return service.get("/api/containers");
 };
 
-export const getStartContainerById = (id) => {
+export const getStartContainerById = async (id) => {
     return service.get("/api/containers/start/" + id);
 };
-export const getStopContainerById = (id) => {
+export const getStopContainerById = async (id) => {
     return service.get("/api/containers/stop/" + id);
 };
-export const getDeleteContainerById = (id) => {
+export const getDeleteContainerById = async (id) => {
     return service.get("/api/containers/remove/" + id);
 };
 
-export const getImages = () => {
+export const getImages = async () => {
     return service.get("/api/images");
 };
-export const getDeleteImagesById = (id) => {
+export const getDeleteImagesById = async (id) => {
     return service.get("/api/images/remove/" + id);
 };
 
-export const searchImage = (name) => {
+export const searchImage = async (name) => {
     return service.get("/api/search/" + name);
 };

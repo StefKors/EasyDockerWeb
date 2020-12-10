@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useCallback} from 'react';
 import {AutoComplete, Button, Card, Col, Icon, Input, message, Modal, Row, Table} from "antd";
 import {getDeleteImagesById, getImages, searchImage} from "../../requests";
 import {Terminal} from "xterm";
@@ -56,7 +56,7 @@ const Images = () => {
 
     const [images, setImages] = useState([]);
 
-    const updateImagesList = () => {
+    const updateImagesList = useCallback(() => {
         setIsLoading(true);
         getImages().then(response => {
             const map = response.map(res => {
@@ -73,7 +73,7 @@ const Images = () => {
         }).finally(() => {
             setIsLoading(false);
         })
-    };
+    }, []);
 
     useEffect(() => {
         updateImagesList();
@@ -98,7 +98,7 @@ const Images = () => {
         return () => {
             socket.disconnect();
         }
-    }, []);
+    }, [updateImagesList]);
 
 
     const deleteImagesHandler = (id) => {
